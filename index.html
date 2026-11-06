@@ -34,56 +34,62 @@
             <h2 class="text-4xl font-bold text-slate-700 mb-4" dir="ltr">y = m &middot; x + b</h2>
         </header>
 
-        <!-- Main Content Wrapper: Graph (Right) & Controls (Left) -->
-        <div class="flex flex-col lg:flex-row gap-8 mb-10 w-full items-start">
+        <!-- Main Content Wrapper: Stats (Right), Graph (Center), Controls (Left) -->
+        <div class="flex flex-col lg:flex-row gap-4 xl:gap-6 mb-10 w-full items-start">
             
-            <!-- Main Area: Unified Graph (Right side in RTL) -->
-            <div class="w-full lg:w-2/3 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col h-full">
-                <h2 class="text-3xl font-bold text-slate-800 text-center mb-4">השוואת התפלגויות במערכת צירים אחת</h2>
+            <!-- Right Column: Stats (Data - Right side in RTL) -->
+            <div class="w-full lg:w-1/4 flex flex-col gap-6">
+                <!-- Orig Stats -->
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-5 text-center text-3xl lg:text-2xl xl:text-3xl font-bold text-orange-900 space-y-4" dir="ltr">
+                    <div class="text-xl xl:text-2xl mb-2 underline decoration-orange-300 decoration-2 underline-offset-4" dir="rtl">נתונים מקוריים (x):</div>
+                    <div>x̄ = <span id="origMean">0</span></div>
+                    <div><span dir="rtl">חציון</span> = <span id="origMed">0</span></div>
+                    <div><span dir="rtl">השכיח</span> = <span id="origMode">0</span></div>
+                    <div>S<sub>x</sub> = <span id="origSD">0</span></div>
+                    <div>S<sup>2</sup><sub>x</sub> = <span id="origVar">0</span></div>
+                </div>
+                <!-- Trans Stats -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 text-center text-3xl lg:text-2xl xl:text-3xl font-bold text-blue-900 space-y-4" dir="ltr">
+                    <div class="text-xl xl:text-2xl mb-2 underline decoration-blue-300 decoration-2 underline-offset-4" dir="rtl">לאחר טרנספורמציה (y):</div>
+                    <div>ȳ = <span id="transMean">0</span></div>
+                    <div><span dir="rtl">חציון</span> = <span id="transMed">0</span></div>
+                    <div><span dir="rtl">השכיח</span> = <span id="transMode">0</span></div>
+                    <div>S<sub>y</sub> = <span id="transSD">0</span></div>
+                    <div>S<sup>2</sup><sub>y</sub> = <span id="transVar">0</span></div>
+                </div>
+            </div>
+
+            <!-- Center Column: Unified Graph -->
+            <div class="w-full lg:w-1/2 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 xl:p-5 flex flex-col h-full">
+                <h2 class="text-2xl xl:text-3xl font-bold text-slate-800 text-center mb-4">השוואת התפלגויות במערכת צירים אחת</h2>
                 
                 <!-- Legend -->
-                <div class="flex justify-center gap-8 mb-4">
-                    <div class="flex items-center gap-2 text-xl md:text-2xl font-bold text-orange-600">
+                <div class="flex justify-center gap-4 xl:gap-8 mb-4 flex-wrap">
+                    <div class="flex items-center gap-2 text-lg xl:text-xl font-bold text-orange-600">
                         <span class="w-4 h-4 bg-orange-600 rounded-full inline-block"></span> מקורי (x)
                     </div>
-                    <div class="flex items-center gap-2 text-xl md:text-2xl font-bold text-blue-600">
+                    <div class="flex items-center gap-2 text-lg xl:text-xl font-bold text-blue-600">
                         <span class="w-4 h-4 bg-blue-600 rounded-full inline-block"></span> לאחר טרנספורמציה (y)
                     </div>
                 </div>
 
                 <!-- Canvas Container -->
-                <div class="w-full h-80 md:h-[450px] bg-slate-50 rounded border mb-6 overflow-hidden">
+                <div class="w-full h-80 md:h-[450px] lg:h-[480px] bg-slate-50 rounded border mb-2 overflow-hidden">
                     <canvas id="mainCanvas" class="w-full h-full block"></canvas>
-                </div>
-
-                <!-- Stats Comparison -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Orig Stats -->
-                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-5 text-center text-4xl font-bold text-orange-900 space-y-5" dir="ltr">
-                        <div>x̄ = <span id="origMean">0</span></div>
-                        <div>S<sub>x</sub> = <span id="origSD">0</span></div>
-                        <div>S<sup>2</sup><sub>x</sub> = <span id="origVar">0</span></div>
-                    </div>
-                    <!-- Trans Stats -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 text-center text-4xl font-bold text-blue-900 space-y-5" dir="ltr">
-                        <div>ȳ = <span id="transMean">0</span></div>
-                        <div>S<sub>y</sub> = <span id="transSD">0</span></div>
-                        <div>S<sup>2</sup><sub>y</sub> = <span id="transVar">0</span></div>
-                    </div>
                 </div>
             </div>
 
-            <!-- Controls (Left side in RTL) -->
-            <div class="w-full lg:w-1/3 flex flex-col gap-6 sticky top-8">
-                <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 md:p-8 w-full flex flex-col gap-10">
+            <!-- Left Column: Controls -->
+            <div class="w-full lg:w-1/4 flex flex-col gap-6 sticky top-8">
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 xl:p-6 w-full flex flex-col gap-8">
                     <!-- Add/Subtract (b) -->
                     <div class="w-full">
-                        <label class="flex justify-between items-center mb-4 font-bold text-slate-700 text-2xl lg:text-3xl">
+                        <label class="flex flex-col xl:flex-row xl:justify-between items-center mb-4 font-bold text-slate-700 text-xl xl:text-2xl gap-2">
                             <span>הוספה/חיסור (b):</span>
-                            <span id="bValueDisplay" class="bg-blue-100 text-blue-800 py-1.5 px-4 rounded-xl text-3xl font-bold" dir="ltr">0</span>
+                            <span id="bValueDisplay" class="bg-blue-100 text-blue-800 py-1 px-4 rounded-xl text-2xl font-bold" dir="ltr">0</span>
                         </label>
                         <input type="range" id="bSlider" min="-20" max="20" step="1" value="0" class="w-full h-10 md:h-8 bg-slate-200 rounded-lg cursor-pointer accent-blue-600">
-                        <div class="flex justify-between text-xl lg:text-2xl text-slate-500 mt-2 font-semibold px-2" dir="ltr">
+                        <div class="flex justify-between text-base xl:text-xl text-slate-500 mt-2 font-semibold px-1" dir="ltr">
                             <span>-20</span>
                             <span>-10</span>
                             <span>0</span>
@@ -94,12 +100,12 @@
 
                     <!-- Multiply/Divide (m) -->
                     <div class="w-full">
-                        <label class="flex justify-between items-center mb-4 font-bold text-slate-700 text-2xl lg:text-3xl">
+                        <label class="flex flex-col xl:flex-row xl:justify-between items-center mb-4 font-bold text-slate-700 text-xl xl:text-2xl gap-2">
                             <span>כפל/חילוק (m):</span>
-                            <span id="mValueDisplay" class="bg-red-100 text-red-800 py-1.5 px-4 rounded-xl text-3xl font-bold" dir="ltr">1.0</span>
+                            <span id="mValueDisplay" class="bg-red-100 text-red-800 py-1 px-4 rounded-xl text-2xl font-bold" dir="ltr">0.0</span>
                         </label>
-                        <input type="range" id="mSlider" min="-3" max="3" step="0.5" value="1" class="w-full h-10 md:h-8 bg-slate-200 rounded-lg cursor-pointer accent-red-600">
-                        <div class="flex justify-between text-xl lg:text-2xl text-slate-500 mt-2 font-semibold px-2" dir="ltr">
+                        <input type="range" id="mSlider" min="-3" max="3" step="0.5" value="0" class="w-full h-10 md:h-8 bg-slate-200 rounded-lg cursor-pointer accent-red-600">
+                        <div class="flex justify-between text-base xl:text-xl text-slate-500 mt-2 font-semibold px-1" dir="ltr">
                             <span>-3</span>
                             <span>-2</span>
                             <span>-1</span>
@@ -112,8 +118,8 @@
                 </div>
 
                 <!-- Reset Button -->
-                <button id="resetBtn" class="text-white text-3xl font-bold bg-emerald-500 hover:bg-emerald-600 px-6 py-4 rounded-xl border border-emerald-600 transition shadow-lg flex items-center justify-center gap-3 active:scale-95 w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                <button id="resetBtn" class="text-white text-2xl xl:text-3xl font-bold bg-emerald-500 hover:bg-emerald-600 px-6 py-4 rounded-xl border border-emerald-600 transition shadow-lg flex items-center justify-center gap-3 active:scale-95 w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 xl:h-10 xl:w-10" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                     </svg>
                     רענון
@@ -149,7 +155,7 @@
         const originalX = [10, 15, 20, 25, 30, 35, 40];
         const frequencies = [3, 5, 8, 6, 4, 3, 2];
         
-        let currentM = 1;
+        let currentM = 0;
         let currentB = 0;
 
         // DOM Elements
@@ -162,11 +168,15 @@
         const statEls = {
             orig: {
                 mean: document.getElementById('origMean'),
+                med: document.getElementById('origMed'),
+                mode: document.getElementById('origMode'),
                 sd: document.getElementById('origSD'),
                 var: document.getElementById('origVar')
             },
             trans: {
                 mean: document.getElementById('transMean'),
+                med: document.getElementById('transMed'),
+                mode: document.getElementById('transMode'),
                 sd: document.getElementById('transSD'),
                 var: document.getElementById('transVar')
             }
@@ -174,9 +184,20 @@
 
         function calcStats(xArr, fArr) {
             let n = 0, sumXF = 0;
+            let expanded = [];
+            let maxF = -1;
+            let mode = xArr[0];
+            
             for(let i = 0; i < xArr.length; i++) {
                 n += fArr[i];
                 sumXF += xArr[i] * fArr[i];
+                for(let j=0; j<fArr[i]; j++) {
+                    expanded.push(xArr[i]);
+                }
+                if(fArr[i] > maxF) {
+                    maxF = fArr[i];
+                    mode = xArr[i];
+                }
             }
             let mean = sumXF / n;
             let sumSq = 0;
@@ -185,7 +206,16 @@
             }
             let variance = sumSq / n;
             let sd = Math.sqrt(variance);
-            return { mean, variance, sd, n };
+            
+            expanded.sort((a,b) => a-b);
+            let median;
+            if(n % 2 === 0) {
+                median = (expanded[n/2 - 1] + expanded[n/2]) / 2;
+            } else {
+                median = expanded[Math.floor(n/2)];
+            }
+            
+            return { mean, variance, sd, n, median, mode };
         }
 
         function formatNum(num) {
@@ -193,7 +223,7 @@
         }
 
         // Draw Unified Chart with Numbers on X Axis
-        function drawUnifiedChart(canvasId, xOrig, xTrans, freqs, meanOrig, meanTrans) {
+        function drawUnifiedChart(canvasId, xOrig, xTrans, freqs, origStats, transStats) {
             const canvas = document.getElementById(canvasId);
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -288,50 +318,73 @@
                 ctx.stroke();
             }
 
-            // Function to draw Mean Indicator
-            const drawMeanIndicator = (meanVal, label, color, boxY) => {
-                const meanPx = getX(meanVal);
-                const boxW = 65; // הגדלת הקופסה
-                const boxH = 45; // הגדלת הקופסה
-                const boxX = meanPx - boxW / 2;
+            // Function to calculate positions and draw lines first (prevents lines from drawing over boxes)
+            const indicators = [];
+            const activeBoxes = [];
+            
+            const registerIndicator = (val, label, color) => {
+                const px = getX(val);
+                const boxW = 75; 
+                const boxH = 40; 
+                
+                let boxY = 10;
+                let collision = true;
+                // Find a Y position that doesn't overlap with existing boxes
+                while(collision && boxY < 280) {
+                    collision = false;
+                    for(let b of activeBoxes) {
+                        if(Math.abs(px - b.x) < boxW + 8 && Math.abs(boxY - b.y) < boxH + 8) {
+                            collision = true;
+                            boxY += boxH + 12;
+                            break;
+                        }
+                    }
+                }
+                activeBoxes.push({x: px, y: boxY, w: boxW, h: boxH});
+                indicators.push({px, boxY, boxW, boxH, label, color});
+            };
+
+            // Register all indicators (calculates their safe Y positions)
+            registerIndicator(origStats.mean, 'x̄', 'rgba(217, 119, 6, 1)');
+            registerIndicator(origStats.median, 'חציון', 'rgba(217, 119, 6, 1)');
+            registerIndicator(origStats.mode, 'השכיח', 'rgba(217, 119, 6, 1)');
+            
+            registerIndicator(transStats.mean, 'ȳ', 'rgba(37, 99, 235, 1)');
+            registerIndicator(transStats.median, 'חציון', 'rgba(37, 99, 235, 1)');
+            registerIndicator(transStats.mode, 'השכיח', 'rgba(37, 99, 235, 1)');
+
+            // Draw all lines down to axis
+            indicators.forEach(ind => {
+                ctx.beginPath();
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(ind.px, ind.boxY + ind.boxH);
+                ctx.lineTo(ind.px, xAxisY);
+                ctx.strokeStyle = ind.color;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            });
+            ctx.setLineDash([]); // Reset dash
+
+            // Draw all boxes (so they cover lines passing behind them)
+            indicators.forEach(ind => {
+                const boxX = ind.px - ind.boxW / 2;
                 
                 // Box Background
                 ctx.fillStyle = '#f8fafc';
-                ctx.fillRect(boxX, boxY, boxW, boxH);
+                ctx.fillRect(boxX, ind.boxY, ind.boxW, ind.boxH);
                 
                 // Box Border
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = ind.color;
                 ctx.lineWidth = 2;
-                ctx.strokeRect(boxX, boxY, boxW, boxH);
+                ctx.strokeRect(boxX, ind.boxY, ind.boxW, ind.boxH);
                 
-                // Text
-                ctx.fillStyle = color;
-                ctx.font = 'bold 28px Assistant, Arial'; // הגדלת טקסט הממוצע
+                // Text inside box
+                ctx.fillStyle = ind.color;
+                ctx.font = 'bold 22px Assistant, Arial'; 
                 ctx.textAlign = 'center';
-                ctx.direction = 'ltr';
-                ctx.fillText(label, meanPx, boxY + 32);
-                
-                // Arrow pointing down
-                ctx.beginPath();
-                ctx.moveTo(meanPx, boxY + boxH);
-                ctx.lineTo(meanPx, boxY + boxH + 12);
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            };
-
-            // Draw Means
-            // Calculate if the mean boxes will overlap (if their centers are closer than ~65 pixels)
-            let diffX = Math.abs(getX(meanOrig) - getX(meanTrans));
-            let transBoxY = 10;
-            
-            // If they are too close to each other, push the transformed mean box down a bit
-            if (diffX < 65) {
-                transBoxY = 65; 
-            }
-
-            drawMeanIndicator(meanOrig, 'x̄', 'rgba(217, 119, 6, 1)', 10);
-            drawMeanIndicator(meanTrans, 'ȳ', 'rgba(37, 99, 235, 1)', transBoxY);
+                ctx.direction = 'rtl';
+                ctx.fillText(ind.label, ind.px, ind.boxY + 28);
+            });
         }
 
         function updateTheoryBox() {
@@ -368,10 +421,14 @@
             
             // Update Textual Stats Displays
             statEls.orig.mean.textContent = formatNum(origStats.mean);
+            statEls.orig.med.textContent = formatNum(origStats.median);
+            statEls.orig.mode.textContent = formatNum(origStats.mode);
             statEls.orig.sd.textContent = formatNum(origStats.sd);
             statEls.orig.var.textContent = formatNum(origStats.variance);
             
             statEls.trans.mean.textContent = formatNum(transStats.mean);
+            statEls.trans.med.textContent = formatNum(transStats.median);
+            statEls.trans.mode.textContent = formatNum(transStats.mode);
             statEls.trans.sd.textContent = formatNum(transStats.sd);
             statEls.trans.var.textContent = formatNum(transStats.variance);
             
@@ -379,7 +436,7 @@
             updateTheoryBox();
             
             // Redraw Unified Chart
-            drawUnifiedChart('mainCanvas', originalX, transformedX, frequencies, origStats.mean, transStats.mean);
+            drawUnifiedChart('mainCanvas', originalX, transformedX, frequencies, origStats, transStats);
         }
 
         function handleSliderChange() {
@@ -397,7 +454,7 @@
         bSlider.addEventListener('input', handleSliderChange);
         
         resetBtn.addEventListener('click', () => {
-            mSlider.value = 1;
+            mSlider.value = 0;
             bSlider.value = 0;
             handleSliderChange();
         });
