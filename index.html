@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המחשת טרנספורמציות לינאריות</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9;
+        }
+        
+        input[type=range] {
+            direction: ltr; /* Ensure sliders work intuitively left-to-right */
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-12">
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-6xl md:text-5xl sm:text-4xl font-bold text-slate-900 mb-4 text-transparent bg-clip-text bg-gradient-to-l from-orange-600 to-red-600">
+                טרנספורמציות לינאריות בסטטיסטיקה 
+            </h1>
+            <h2 class="text-4xl font-bold text-slate-700 mb-4" dir="ltr">y = m &middot; x + b</h2>
+        </header>
+
+        <!-- Main Content Wrapper: Graph (Right) & Controls (Left) -->
+        <div class="flex flex-col lg:flex-row gap-8 mb-10 w-full items-start">
+            
+            <!-- Main Area: Unified Graph (Right side in RTL) -->
+            <div class="w-full lg:w-2/3 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col h-full">
+                <h2 class="text-3xl font-bold text-slate-800 text-center mb-4">השוואת התפלגויות במערכת צירים אחת</h2>
+                
+                <!-- Legend -->
+                <div class="flex justify-center gap-8 mb-4">
+                    <div class="flex items-center gap-2 text-xl md:text-2xl font-bold text-orange-600">
+                        <span class="w-4 h-4 bg-orange-600 rounded-full inline-block"></span> מקורי (x)
+                    </div>
+                    <div class="flex items-center gap-2 text-xl md:text-2xl font-bold text-blue-600">
+                        <span class="w-4 h-4 bg-blue-600 rounded-full inline-block"></span> לאחר טרנספורמציה (y)
+                    </div>
+                </div>
+
+                <!-- Canvas Container -->
+                <div class="w-full h-80 md:h-[450px] bg-slate-50 rounded border mb-6 overflow-hidden">
+                    <canvas id="mainCanvas" class="w-full h-full block"></canvas>
+                </div>
+
+                <!-- Stats Comparison -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Orig Stats -->
+                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-5 text-center text-4xl font-bold text-orange-900 space-y-5" dir="ltr">
+                        <div>x̄ = <span id="origMean">0</span></div>
+                        <div>S<sub>x</sub> = <span id="origSD">0</span></div>
+                        <div>S<sup>2</sup><sub>x</sub> = <span id="origVar">0</span></div>
+                    </div>
+                    <!-- Trans Stats -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 text-center text-4xl font-bold text-blue-900 space-y-5" dir="ltr">
+                        <div>ȳ = <span id="transMean">0</span></div>
+                        <div>S<sub>y</sub> = <span id="transSD">0</span></div>
+                        <div>S<sup>2</sup><sub>y</sub> = <span id="transVar">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls (Left side in RTL) -->
+            <div class="w-full lg:w-1/3 flex flex-col gap-6 sticky top-8">
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 md:p-8 w-full flex flex-col gap-10">
+                    <!-- Add/Subtract (b) -->
+                    <div class="w-full">
+                        <label class="flex justify-between items-center mb-4 font-bold text-slate-700 text-2xl lg:text-3xl">
+                            <span>הוספה/חיסור (b):</span>
+                            <span id="bValueDisplay" class="bg-blue-100 text-blue-800 py-1.5 px-4 rounded-xl text-3xl font-bold" dir="ltr">0</span>
+                        </label>
+                        <input type="range" id="bSlider" min="-20" max="20" step="1" value="0" class="w-full h-10 md:h-8 bg-slate-200 rounded-lg cursor-pointer accent-blue-600">
+                        <div class="flex justify-between text-xl lg:text-2xl text-slate-500 mt-2 font-semibold px-2" dir="ltr">
+                            <span>-20</span>
+                            <span>-10</span>
+                            <span>0</span>
+                            <span>+10</span>
+                            <span>+20</span>
+                        </div>
+                    </div>
+
+                    <!-- Multiply/Divide (m) -->
+                    <div class="w-full">
+                        <label class="flex justify-between items-center mb-4 font-bold text-slate-700 text-2xl lg:text-3xl">
+                            <span>כפל/חילוק (m):</span>
+                            <span id="mValueDisplay" class="bg-red-100 text-red-800 py-1.5 px-4 rounded-xl text-3xl font-bold" dir="ltr">1.0</span>
+                        </label>
+                        <input type="range" id="mSlider" min="-3" max="3" step="0.5" value="1" class="w-full h-10 md:h-8 bg-slate-200 rounded-lg cursor-pointer accent-red-600">
+                        <div class="flex justify-between text-xl lg:text-2xl text-slate-500 mt-2 font-semibold px-2" dir="ltr">
+                            <span>-3</span>
+                            <span>-2</span>
+                            <span>-1</span>
+                            <span>0</span>
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset Button -->
+                <button id="resetBtn" class="text-white text-3xl font-bold bg-emerald-500 hover:bg-emerald-600 px-6 py-4 rounded-xl border border-emerald-600 transition shadow-lg flex items-center justify-center gap-3 active:scale-95 w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                    רענון
+                </button>
+            </div>
+            
+        </div>
+
+        <!-- Theory Box (Bottom) -->
+        <div class="flex flex-col items-center gap-10 mb-10">
+            <div class="w-full max-w-4xl">
+                <div class="bg-blue-50 rounded-2xl shadow-sm border border-blue-200 p-8 flex flex-col justify-center items-center">
+                    <h3 class="text-4xl font-bold text-blue-900 mb-8 border-b border-blue-200 pb-4 w-full text-center">תזכורת תיאורטית</h3>
+                    <div class="text-4xl sm:text-3xl md:text-4xl text-blue-800 space-y-8 font-bold leading-relaxed w-full text-center" dir="ltr">
+                        <div id="theoryEq1">y = mx + b</div>
+                        <div id="theoryEq2">ȳ = mx̄ + b</div>
+                        <div id="theoryEq3">S<sub>y</sub> = |m|S<sub>x</sub></div>
+                        <div id="theoryEq4">S<sup>2</sup><sub>y</sub> = m<sup>2</sup>S<sup>2</sup><sub>x</sub></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 pb-6 text-slate-700 font-bold text-3xl bg-white/50 py-4 rounded-xl shadow-sm border border-slate-200">
+            הוכן על ידי רגינה צ'ולסקי
+        </footer>
+
+    </div>
+
+    <script>
+        // Data Setup
+        const originalX = [10, 15, 20, 25, 30, 35, 40];
+        const frequencies = [3, 5, 8, 6, 4, 3, 2];
+        
+        let currentM = 1;
+        let currentB = 0;
+
+        // DOM Elements
+        const mSlider = document.getElementById('mSlider');
+        const bSlider = document.getElementById('bSlider');
+        const mValueDisplay = document.getElementById('mValueDisplay');
+        const bValueDisplay = document.getElementById('bValueDisplay');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const statEls = {
+            orig: {
+                mean: document.getElementById('origMean'),
+                sd: document.getElementById('origSD'),
+                var: document.getElementById('origVar')
+            },
+            trans: {
+                mean: document.getElementById('transMean'),
+                sd: document.getElementById('transSD'),
+                var: document.getElementById('transVar')
+            }
+        };
+
+        function calcStats(xArr, fArr) {
+            let n = 0, sumXF = 0;
+            for(let i = 0; i < xArr.length; i++) {
+                n += fArr[i];
+                sumXF += xArr[i] * fArr[i];
+            }
+            let mean = sumXF / n;
+            let sumSq = 0;
+            for(let i = 0; i < xArr.length; i++) {
+                sumSq += fArr[i] * Math.pow(xArr[i] - mean, 2);
+            }
+            let variance = sumSq / n;
+            let sd = Math.sqrt(variance);
+            return { mean, variance, sd, n };
+        }
+
+        function formatNum(num) {
+            return Number.isInteger(num) ? num.toString() : num.toFixed(2);
+        }
+
+        // Draw Unified Chart with Numbers on X Axis
+        function drawUnifiedChart(canvasId, xOrig, xTrans, freqs, meanOrig, meanTrans) {
+            const canvas = document.getElementById(canvasId);
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const parent = canvas.parentElement;
+            const rect = parent.getBoundingClientRect();
+            canvas.width = rect.width || parent.clientWidth || 800;
+            canvas.height = rect.height || parent.clientHeight || 450;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            if (w === 0 || h === 0) return; 
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // הגדרת גבולות קבועים לציר ה-X כדי שיהיה סטטי
+            // הטווח נבחר כדי לכסות את כל האפשרויות של הסליידרים (מ-140- עד 140)
+            const minX = -150;
+            const maxX = 150;
+            
+            const maxY = Math.max(...freqs) + 1.5; 
+            
+            const xAxisY = h - 55; // Height of the X axis line (הורם מעט כדי לפנות מקום למספרים גדולים)
+            
+            const getX = (val) => ((val - minX) / (maxX - minX)) * w;
+            const getY = (val) => xAxisY - ((val / maxY) * (xAxisY - 60));
+            
+            // Draw X-axis line
+            ctx.beginPath();
+            ctx.moveTo(0, xAxisY);
+            ctx.lineTo(w, xAxisY);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Calculate and draw X-axis Ticks (Numbers) - Whole tens only
+            let step = 10;
+            if (w < 800) step = 20; // Prevent overlap on smaller screens by showing 20s
+            if (w < 500) step = 30; // 30s on mobile screens
+            
+            let startTick = Math.ceil(minX / step) * step;
+            
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 28px Assistant, Arial'; // Enlarge further
+            ctx.textAlign = 'center';
+            ctx.direction = 'ltr'; // Crucial: forces LTR drawing for negative signs
+            
+            for (let tick = startTick; tick <= maxX; tick += step) {
+                let px = getX(tick);
+                // Draw small tick line
+                ctx.beginPath();
+                ctx.moveTo(px, xAxisY);
+                ctx.lineTo(px, xAxisY + 10);
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw number if it fits nicely
+                if (px > 30 && px < w - 30) {
+                    // Explicitly format with minus on the left to be absolutely safe
+                    let formattedTick = tick === 0 ? "0" : (tick < 0 ? "-" + Math.abs(tick) : tick.toString());
+                    ctx.fillText(formattedTick, px, xAxisY + 38);
+                }
+            }
+            
+            // Settings for drawing bars
+            const barWidth = 6;
+            ctx.lineWidth = barWidth;
+            ctx.lineCap = 'round';
+
+            // Draw Original Bars (Orange)
+            ctx.strokeStyle = 'rgba(217, 119, 6, 0.85)'; // Orange with slight transparency
+            for (let i = 0; i < xOrig.length; i++) {
+                const px = getX(xOrig[i]);
+                const py = getY(freqs[i]);
+                ctx.beginPath();
+                ctx.moveTo(px, xAxisY);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+            }
+
+            // Draw Transformed Bars (Blue)
+            ctx.strokeStyle = 'rgba(37, 99, 235, 0.85)'; // Blue with slight transparency
+            for (let i = 0; i < xTrans.length; i++) {
+                // Offset the blue line slightly to the right by half a bar width so they don't hide each other when m=1 and b=0
+                const px = getX(xTrans[i]) + (barWidth / 1.5); 
+                const py = getY(freqs[i]);
+                ctx.beginPath();
+                ctx.moveTo(px, xAxisY);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+            }
+
+            // Function to draw Mean Indicator
+            const drawMeanIndicator = (meanVal, label, color, boxY) => {
+                const meanPx = getX(meanVal);
+                const boxW = 65; // הגדלת הקופסה
+                const boxH = 45; // הגדלת הקופסה
+                const boxX = meanPx - boxW / 2;
+                
+                // Box Background
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(boxX, boxY, boxW, boxH);
+                
+                // Box Border
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(boxX, boxY, boxW, boxH);
+                
+                // Text
+                ctx.fillStyle = color;
+                ctx.font = 'bold 28px Assistant, Arial'; // הגדלת טקסט הממוצע
+                ctx.textAlign = 'center';
+                ctx.direction = 'ltr';
+                ctx.fillText(label, meanPx, boxY + 32);
+                
+                // Arrow pointing down
+                ctx.beginPath();
+                ctx.moveTo(meanPx, boxY + boxH);
+                ctx.lineTo(meanPx, boxY + boxH + 12);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            };
+
+            // Draw Means
+            // Calculate if the mean boxes will overlap (if their centers are closer than ~65 pixels)
+            let diffX = Math.abs(getX(meanOrig) - getX(meanTrans));
+            let transBoxY = 10;
+            
+            // If they are too close to each other, push the transformed mean box down a bit
+            if (diffX < 65) {
+                transBoxY = 65; 
+            }
+
+            drawMeanIndicator(meanOrig, 'x̄', 'rgba(217, 119, 6, 1)', 10);
+            drawMeanIndicator(meanTrans, 'ȳ', 'rgba(37, 99, 235, 1)', transBoxY);
+        }
+
+        function updateTheoryBox() {
+            let m = currentM;
+            let b = currentB;
+            
+            // Format terms without the multiplication dot
+            let mStrX = m === 1 ? "x" : (m === -1 ? "-x" : m + "x");
+            let mStrXbar = m === 1 ? "x̄" : (m === -1 ? "-x̄" : m + "x̄");
+            
+            let bStr = b === 0 ? "" : (b > 0 ? " + " + b : " - " + Math.abs(b));
+            
+            let yEq = m === 0 ? "y = " + b : "y = " + mStrX + bStr;
+            let ybarEq = m === 0 ? "ȳ = " + b : "ȳ = " + mStrXbar + bStr;
+            
+            let syEq = "S<sub>y</sub> = " + (Math.abs(m) === 1 ? "" : Math.abs(m)) + "S<sub>x</sub>";
+            if (m === 0) syEq = "S<sub>y</sub> = 0";
+            
+            let mSq = Math.pow(m, 2);
+            let varEq = "S<sup>2</sup><sub>y</sub> = " + (mSq === 1 ? "" : formatNum(mSq)) + "S<sup>2</sup><sub>x</sub>";
+            if (m === 0) varEq = "S<sup>2</sup><sub>y</sub> = 0";
+
+            document.getElementById('theoryEq1').innerHTML = yEq;
+            document.getElementById('theoryEq2').innerHTML = ybarEq;
+            document.getElementById('theoryEq3').innerHTML = syEq;
+            document.getElementById('theoryEq4').innerHTML = varEq;
+        }
+
+        function updateAll() {
+            // Recalculate based on m, b
+            const origStats = calcStats(originalX, frequencies);
+            const transformedX = originalX.map(x => (currentM * x) + currentB);
+            const transStats = calcStats(transformedX, frequencies);
+            
+            // Update Textual Stats Displays
+            statEls.orig.mean.textContent = formatNum(origStats.mean);
+            statEls.orig.sd.textContent = formatNum(origStats.sd);
+            statEls.orig.var.textContent = formatNum(origStats.variance);
+            
+            statEls.trans.mean.textContent = formatNum(transStats.mean);
+            statEls.trans.sd.textContent = formatNum(transStats.sd);
+            statEls.trans.var.textContent = formatNum(transStats.variance);
+            
+            // Update Dynamic Theory Box
+            updateTheoryBox();
+            
+            // Redraw Unified Chart
+            drawUnifiedChart('mainCanvas', originalX, transformedX, frequencies, origStats.mean, transStats.mean);
+        }
+
+        function handleSliderChange() {
+            currentM = parseFloat(mSlider.value);
+            currentB = parseFloat(bSlider.value);
+            
+            mValueDisplay.textContent = Number.isInteger(currentM) ? currentM.toFixed(1) : currentM.toString();
+            bValueDisplay.textContent = (currentB > 0 ? '+' : '') + currentB.toString();
+            
+            updateAll();
+        }
+
+        // Attach listeners
+        mSlider.addEventListener('input', handleSliderChange);
+        bSlider.addEventListener('input', handleSliderChange);
+        
+        resetBtn.addEventListener('click', () => {
+            mSlider.value = 1;
+            bSlider.value = 0;
+            handleSliderChange();
+        });
+
+        // Initialize and handle window resize redraws (Removed window.onload to fix missing graphs)
+        handleSliderChange();
+        window.addEventListener('resize', updateAll);
+        
+        // Force a redraw after a short delay to ensure the layout has fully rendered
+        setTimeout(updateAll, 150);
+
+    </script>
+</body>
+</html>
